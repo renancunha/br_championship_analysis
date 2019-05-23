@@ -28,6 +28,8 @@ class BrazilianChampionshipSpider(CrawlSpider):
         match_location = self._get_match_location(response)
         team_names = self._get_team_names(response)
         scoreboard = self._get_scoreboard(response)
+        yellow_cards = self._get_yellow_cards(response)
+        red_cards = self._get_red_cards(response)
 
         item = {
             'match_number': match_number,
@@ -39,6 +41,10 @@ class BrazilianChampionshipSpider(CrawlSpider):
             'team_visitor_name': team_names['team_visitor_name'],
             'team_home_goals': scoreboard['team_home_goals'],
             'team_visitor_goals': scoreboard['team_visitor_goals'],
+            'yellow_cards_home': yellow_cards['yellow_cards_home'],
+            'yellow_cards_visitor': yellow_cards['yellow_cards_visitor'],
+            'red_cards_home': red_cards['red_cards_home'],
+            'red_cards_visitor': red_cards['red_cards_visitor']
         }
 
         yield MatchSummaryItem(item)
@@ -91,6 +97,10 @@ class BrazilianChampionshipSpider(CrawlSpider):
         return dict(zip(props, scoreboard))
 
     def _get_match_datetime(self, response):
+        """
+        Get the date & time when the match occurred
+        Should consider brazilian time offset (GMT-0300)
+        """
 
         css_query = '.section-content-header .text-2::text'
         texts = response.css(css_query).extract()
@@ -119,4 +129,36 @@ class BrazilianChampionshipSpider(CrawlSpider):
             'stadium_name': stadium_name.strip(),
             'city': city.strip(),
             'state': state.strip()
+        }
+
+    def _get_yellow_cards(self, response):
+        return self._get_cards(response, 'yellow')
+
+    def _get_red_cards(self, response):
+        return self._get_cards(response, 'red')
+
+    def _get_cards(self, response, color):
+        """
+        Counts generic cards for each team (home & visitor)
+        """
+
+        css_query = '.jogo-escalacao .row:not(.hidden-sm) ' \
+                    '.col-xs-6:nth-child(%s) .icon-%s-card'
+
+        css_query_home = css_query % ('2n+1', color)
+        css_query_visitor = css_query % ('2n', color)
+
+        cards_home = len(
+            response.css(css_query_home)
+                    .extract()
+        )
+
+        cards_visitor = len(
+            response.css(css_query_visitor)
+                    .extract()
+        )
+
+        return {
+            '%s_cards_home' % color: cards_home,
+            '%s_cards_visitor' % color: cards_visitor
         }
