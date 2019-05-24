@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from scrapy.spiders import CrawlSpider
+from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider, Rule
 from cbf_crawler.items import MatchSummaryItem
 import dateparser
 
@@ -11,15 +12,14 @@ class BrazilianChampionshipSpider(CrawlSpider):
     start_urls = ['http://www.cbf.com.br/futebol-brasileiro/competicoes/'
                   'campeonato-brasileiro-serie-a/2018']
 
-    def parse(self, response):
-
-        # Get the links to all championship matches
-        matches_details_urls = response.css(
-            '.aside-rodadas ul li .partida-desc a::attr(href)'
-        ).extract()
-
-        for url in matches_details_urls:
-            yield scrapy.Request(url, callback=self.parse_match_summary)
+    rules = [
+        Rule(
+            LinkExtractor(
+                restrict_css='.aside-rodadas ul li .partida-desc a'
+            ),
+            callback='parse_match_summary'
+        )
+    ]
 
     def parse_match_summary(self, response):
 
