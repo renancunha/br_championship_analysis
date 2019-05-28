@@ -50,4 +50,4 @@ A much better version was made refactoring almost the entire code.
 Now I'm using rules and link extractors to follow the links, and item loaders to process the collected data.
 Item loaders is a very efficient pattern because allows the code reuse, testing, and others.
 
-The source-code was written applying the PEP8 style guide for Python code.
+The source-code was written following the PEP8 style guide for Python code.
