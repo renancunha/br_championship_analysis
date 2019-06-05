@@ -8,6 +8,17 @@ import dateparser
 
 
 class BrazilianChampionshipSpider(CrawlSpider):
+    """
+    Brazilian Football Championship - Spider
+    by Renan Cunha <renan1bara@gmail.com>
+
+    A spider to crawl the CBF website, aiming to get summary data
+    of all matches of the Brazilian Football Championship (2018).
+
+    This spider produces match items that contain information like
+    the match score, team names, cards number among others.
+    """
+
     name = 'brazilian_championship'
     allowed_domains = ['cbf.com.br']
     start_urls = ['http://www.cbf.com.br/futebol-brasileiro/competicoes/'

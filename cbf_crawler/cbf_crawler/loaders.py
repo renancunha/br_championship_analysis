@@ -73,7 +73,7 @@ class MatchItemLoader(ItemLoader):
     red_cards_home_in = Compose(count_values)
     red_cards_visitor_in = Compose(count_values)
 
-    # output processors
+    # output processors (integer conversion)
     yellow_cards_home_out = Compose(TakeFirst(), to_int)
     yellow_cards_visitor_out = Compose(TakeFirst(), to_int)
     red_cards_home_out = Compose(TakeFirst(), to_int)
